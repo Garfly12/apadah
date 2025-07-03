@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bintang Acak + Garis Stabil 1080p</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .top-button {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 18px 64px;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+      font-size: 20px;
+      z-index: 1;
+      box-shadow: 0 0 12px rgba(255,255,255,0.25);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.3s;
+    }
+
+    .top-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 16px rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<a class="top-button" href="https://youtube.com" target="_blank">open youtube</a>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  let width = canvas.width = window.innerWidth;
+  let height = canvas.height = window.innerHeight;
+
+  const starSize = 8;
+  const baseSpeed = 0.6;
+  const starCount = 100;
+  const maxDistance = 200;
+  const stars = [];
+
+  for (let i = 0; i < starCount; i++) {
+    stars.push({
+      x: Math.random() * width * 0.8 + width * 0.1,
+      y: Math.random() * height * 0.8 + height * 0.1,
+      dx: (Math.random() - 0.5) * baseSpeed,
+      dy: (Math.random() - 0.5) * baseSpeed
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < stars.length; i++) {
+      const current = stars[i];
+      for (let j = i + 1; j < stars.length; j++) {
+        const target = stars[j];
+        const dx = current.x - target.x;
+        const dy = current.y - target.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDistance) {
+          ctx.strokeStyle = `rgba(255,255,255,0.4)`;
+          ctx.beginPath();
+          ctx.moveTo(current.x + starSize / 2, current.y + starSize / 2);
+          ctx.lineTo(target.x + starSize / 2, target.y + starSize / 2);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (const star of stars) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(star.x, star.y, starSize, starSize);
+    }
+
+    update();
+    requestAnimationFrame(draw);
+  }
+
+  function update() {
+    for (const star of stars) {
+      star.x += star.dx;
+      star.y += star.dy;
+      if (star.x < 0 || star.x > width - starSize) star.dx *= -1;
+      if (star.y < 0 || star.y > height - starSize) star.dy *= -1;
+    }
+  }
+
+  window.addEventListener("resize", () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  draw();
+</script>
+</body>
+</html>
